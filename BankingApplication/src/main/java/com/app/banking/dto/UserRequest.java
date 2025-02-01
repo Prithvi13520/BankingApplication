@@ -30,5 +30,7 @@ public class UserRequest {
     @NotBlank(message = "phoneNumber is mandatory")
     private String phoneNumber;
     private String alternativePhoneNumber;
+    @NotBlank(message = "panNumber is mandatory")
+    private String panNumber;
 
 }

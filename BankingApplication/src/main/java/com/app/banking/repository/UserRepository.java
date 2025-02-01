@@ -8,6 +8,8 @@ import com.app.banking.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long>{
 
+    Boolean existsByPanNumber(String panNumber);
     Boolean existsByEmail(String email);
+    Boolean existsByPhoneNumber(String phoneNumber);
 
 }
