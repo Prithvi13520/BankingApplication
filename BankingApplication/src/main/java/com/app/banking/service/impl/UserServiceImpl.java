@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.app.banking.Constants.Constants;
-import com.app.banking.controller.UserController;
+import com.app.banking.constants.Constants;
 import com.app.banking.dto.AccountInfo;
 import com.app.banking.dto.BankResponse;
+import com.app.banking.dto.EmailDetails;
 import com.app.banking.dto.UserRequest;
 import com.app.banking.entity.User;
 import com.app.banking.repository.UserRepository;
@@ -23,6 +23,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @Override
     public BankResponse createAccount(UserRequest userRequest) {
@@ -38,7 +41,7 @@ public class UserServiceImpl implements UserService{
             .accountInfo(null)
             .build();
         }
-        
+
         logger.info("Email-Phonenumber validation starts");
         if(userRepository.existsByEmail(userRequest.getEmail().toLowerCase()) || userRepository.existsByPhoneNumber(userRequest.getPhoneNumber())){
             return BankResponse.builder()
@@ -67,6 +70,14 @@ public class UserServiceImpl implements UserService{
         logger.info("User Entity object to be saved in DB is"+newUser.toString());
 
         User savedUser = userRepository.save(newUser);
+        //Send Email Alert
+        EmailDetails emailDetails = EmailDetails.builder()
+        .recipient(savedUser.getEmail())
+        .subject("ACCOUNT CREATION")
+        .messageBody("Congratulations! your account has been successfully created.\n Your Account Details: \n"+
+        "Account  Name: " + savedUser.getFirstName() + " " + savedUser.getLastName() + "\nAccount Number: "+ savedUser.getAccountNumber())
+        .build();
+        emailService.sendEmailAlert(emailDetails);
 
         logger.info("User record saved in DB"+savedUser.toString());
 

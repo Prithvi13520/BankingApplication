@@ -1,4 +1,4 @@
-package com.app.banking.Constants;
+package com.app.banking.constants;
 
 public class Constants {
 
@@ -8,5 +8,7 @@ public class Constants {
     public static final String ACCOUNT_EXISTS_PAN_MESSAGE = "Already an other account linked with same PAN in system";
     public static final String ACCOUNT_CREATION_SUCCESS_CODE = "200";
     public static final String ACCOUNT_CREATION_MESSAGE = "Account has been successfully created";
+    public static final String MAIL_EXCEPTION_CODE = "250";
+    public static final String MAIL_EXCEPTION_MESSAGE = "Alert Mail Notification Failed";
 
 }
