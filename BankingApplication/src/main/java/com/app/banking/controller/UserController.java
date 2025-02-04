@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.banking.dto.BankResponse;
+import com.app.banking.dto.CreditDebitRequest;
+import com.app.banking.dto.EnquiryRequest;
 import com.app.banking.dto.UserRequest;
 import com.app.banking.service.impl.UserService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 @RestController
@@ -44,5 +48,55 @@ public class UserController {
             return new ResponseEntity<>(bankResponse, HttpStatus.NOT_ACCEPTABLE);
         }   
     }
+
+    @GetMapping("/balanceEnquiry")
+    public ResponseEntity<BankResponse> getBalanceEnquiry(@RequestBody EnquiryRequest request) {
+        BankResponse bankResponse = userService.balanceEnquiry(request);
+        if(bankResponse.getResponseCode()=="004")
+        {
+            return new ResponseEntity<>(bankResponse,HttpStatus.FOUND);
+        }
+        else
+        {
+            return new ResponseEntity<>(bankResponse,HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/nameEnquiry")
+    public ResponseEntity<String> getNameEnquiry(@RequestBody EnquiryRequest request) {
+        String responseString = userService.nameEnquiry(request);
+        if(responseString.contains("Account Number not present in system"))
+        {
+            return new ResponseEntity<>(responseString,HttpStatus.NOT_FOUND);
+        }
+        else{
+            return new ResponseEntity<>(responseString,HttpStatus.FOUND);
+        }
+    }
+
+    @PostMapping("/creditAccount")
+    public ResponseEntity<BankResponse> creditAccount(@RequestBody CreditDebitRequest request) {
+        BankResponse bankResponse = userService.creditAccount(request);
+        if (bankResponse.getResponseCode()=="005") {
+            return new ResponseEntity<>(bankResponse, HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<>(bankResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/debitAccount")
+    public ResponseEntity<BankResponse> debitAccount(@RequestBody CreditDebitRequest request) {
+        BankResponse bankResponse = userService.debitAccount(request);
+        if (bankResponse.getResponseCode()=="007") {
+            return new ResponseEntity<>(bankResponse, HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<>(bankResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 
 }
