@@ -12,18 +12,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.banking.dto.BankResponse;
 import com.app.banking.dto.CreditDebitRequest;
 import com.app.banking.dto.EnquiryRequest;
+import com.app.banking.dto.TransferRequest;
 import com.app.banking.dto.UserRequest;
 import com.app.banking.service.impl.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
 @RestController
 @RequestMapping("/bank/user")
+@Tag(name = "User Account Management APIs")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -32,6 +39,14 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/createAccount")
+    @Operation(
+    summary = "Create New User Account",
+    description = "Creating a new user and assigning a account ID"
+    )
+    @ApiResponse(
+        responseCode = "201",
+        description = "http status 201 created"
+    )
     public ResponseEntity<BankResponse> createAccount(@Valid @RequestBody UserRequest userRequest)
     {
         logger.info("Entered create account endpoint");
@@ -50,6 +65,14 @@ public class UserController {
     }
 
     @GetMapping("/balanceEnquiry")
+    @Operation(
+        summary = "Balance Enquiry",
+        description = "To check the balance of single account"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "http status 200 SUCCESS"
+        )
     public ResponseEntity<BankResponse> getBalanceEnquiry(@RequestBody EnquiryRequest request) {
         BankResponse bankResponse = userService.balanceEnquiry(request);
         if(bankResponse.getResponseCode()=="004")
@@ -97,6 +120,33 @@ public class UserController {
             return new ResponseEntity<>(bankResponse, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/transferAccount")
+    public ResponseEntity<BankResponse> transferAccount(@RequestBody TransferRequest request) {
+        BankResponse bankResponse = userService.transferAccount(request);
+        if (bankResponse.getResponseCode()=="010") {
+            return new ResponseEntity<>(bankResponse, HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<>(bankResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/generateStatement")
+    public ResponseEntity<BankResponse> getStatement(@RequestParam String accountNumber, @RequestParam String startDate, @RequestParam String endDate)  {
+        BankResponse bankResponse =  userService.generateStatement(accountNumber, startDate, endDate);
+
+        if(bankResponse.getResponseCode()=="011")
+        {
+            return new ResponseEntity<>(bankResponse, HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<>(bankResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     
 
 }

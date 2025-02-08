@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "custom.mail.enable",
+  "type": "java.lang.String",
+  "description": "Control parameter for enabling or Disabling the mail communication"
+}]}
